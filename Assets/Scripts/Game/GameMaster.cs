@@ -23,6 +23,9 @@ public class GameMaster : MonoBehaviour {
 	public Square Square3;
 	public Square Square4;
 
+	public AudioClip Squish;
+	AudioSource audio;
+
 	// GameEye[] gameBoard = new GameEye[20];
 	private Dictionary<string, GameEye> gameBoard;
 
@@ -33,6 +36,7 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	void Start () {
+		audio = GetComponent<AudioSource>();
 		moves = moves.GetComponent<Text>();
 		BigSquare = BigSquare.GetComponent<BigSquare>();
 		DRect = DRect.GetComponent<DRect>();
@@ -114,6 +118,8 @@ public class GameMaster : MonoBehaviour {
 	public void AddMove() {
 		this.totalMoves++;	
 		moves.text = string.Format("Moves: {0}", totalMoves);
+
+		audio.PlayOneShot(Squish, 0.7F);
 	}
 
 	public void CheckWin() {
