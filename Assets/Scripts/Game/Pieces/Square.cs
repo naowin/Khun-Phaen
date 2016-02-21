@@ -3,6 +3,9 @@ using System.Collections;
 
 public class Square : MonoBehaviour {
 
+	
+	private float nextSoundTime=0.1F;
+	private float lastSound = 0.0F;
 	Vector3 StartPosition;
 	int threshold = 9;
 	bool moved = false;
@@ -45,6 +48,7 @@ public class Square : MonoBehaviour {
 				currentPosition = transform.position;
 
 				moved = true;
+				PlaySound();
 			}
 		}
 		else if (f <= -0.5) {
@@ -59,6 +63,7 @@ public class Square : MonoBehaviour {
 				currentPosition = transform.position;
 
 				moved = true;
+				PlaySound();
 			}
 		}
 		else {
@@ -76,6 +81,7 @@ public class Square : MonoBehaviour {
 					currentPosition = transform.position;
 
 					moved = true;
+					PlaySound();
 				}
 			}
 			else {
@@ -91,6 +97,7 @@ public class Square : MonoBehaviour {
 					currentPosition = transform.position;
 
 					moved = true;
+					PlaySound();
 				}
 			}
 		}
@@ -110,5 +117,12 @@ public class Square : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
+	}
+		
+	private void PlaySound(){
+		if((Time.time) > nextSoundTime + lastSound){
+			GameMaster.gameMaster.PlaySound();
+			lastSound = Time.time;
+		}
 	}
 }

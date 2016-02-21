@@ -118,10 +118,12 @@ public class GameMaster : MonoBehaviour {
 	public void AddMove() {
 		this.totalMoves++;	
 		moves.text = string.Format("Moves: {0}", totalMoves);
-
-		audio.PlayOneShot(Squish, 0.7F);
 	}
 
+	public void PlaySound() {
+		audio.PlayOneShot(Squish, 1F);
+	}
+		
 	public void CheckWin() {
 		if(BigSquare.transform.position.x == 0 && BigSquare.transform.position.z <= -7 )
 		{
