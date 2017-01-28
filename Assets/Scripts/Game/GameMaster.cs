@@ -23,8 +23,13 @@ public class GameMaster : MonoBehaviour {
 	public Square Square3;
 	public Square Square4;
 
-	public AudioClip Squish;
-	AudioSource audio;
+	// menus
+	public GameObject mainMenuPanel;
+	public GameObject highscorePanel;
+	public GameObject aboutPanel;
+	public GameObject gameText;
+	public GameObject blackScreen;
+	private List<GameObject> gamePanels;
 
 	// GameEye[] gameBoard = new GameEye[20];
 	private Dictionary<string, GameEye> gameBoard;
@@ -36,7 +41,6 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	void Start () {
-		audio = GetComponent<AudioSource>();
 		moves = moves.GetComponent<Text>();
 		BigSquare = BigSquare.GetComponent<BigSquare>();
 		DRect = DRect.GetComponent<DRect>();
@@ -50,6 +54,12 @@ public class GameMaster : MonoBehaviour {
 		Square4 = Square4.GetComponent<Square>();
 
 		setGameBoard ();
+
+		gamePanels = new List<GameObject> ();
+		gamePanels.Add(mainMenuPanel);
+		gamePanels.Add(highscorePanel);
+		gamePanels.Add(aboutPanel);
+		gamePanels.Add(gameText);
 	}
 
 	public void setGameBoard(){
@@ -120,14 +130,28 @@ public class GameMaster : MonoBehaviour {
 		moves.text = string.Format("Moves: {0}", totalMoves);
 	}
 
-	public void PlaySound() {
-		audio.PlayOneShot(Squish, 1F);
-	}
-		
 	public void CheckWin() {
 		if(BigSquare.transform.position.x == 0 && BigSquare.transform.position.z <= -7 )
 		{
 			WinWindow.gameObject.SetActive(true);
+		}
+	}
+
+	public void SwitchMenu(int menuID) {
+		foreach (var panel in gamePanels) {
+			panel.SetActive (false);
+		}
+
+		switch (menuID) {
+			case 0:
+			case 1:
+			case 2:
+				gamePanels [menuID].SetActive (true);
+				break;
+			default:
+				blackScreen.SetActive (false);
+				gamePanels [3].SetActive (true);
+				break;
 		}
 	}
 

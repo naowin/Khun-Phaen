@@ -2,9 +2,7 @@
 using System.Collections;
 
 public class DRect : MonoBehaviour {
-		
-	private float nextSoundTime=0.1F;
-	private float lastSound = 0.0F;
+
 	Vector3 StartPosition;
 	int threshold = 9;
 	bool moved = false;
@@ -62,7 +60,6 @@ public class DRect : MonoBehaviour {
 				currentPosition = transform.position;
 
 				moved = true;
-				PlaySound();
 			}	
 		}
 		else if (f <= -0.5) {
@@ -92,7 +89,6 @@ public class DRect : MonoBehaviour {
 				currentPosition = transform.position;
 
 				moved = true;
-				PlaySound();
 			}
 		}
 		else {
@@ -113,7 +109,6 @@ public class DRect : MonoBehaviour {
 					unlockEyes(unlock, destination);
 					currentPosition = transform.position;
 
-					PlaySound();
 					moved = true;
 				}
 			}
@@ -133,7 +128,6 @@ public class DRect : MonoBehaviour {
 					unlockEyes(unlock, destination);
 					currentPosition = transform.position;
 
-					PlaySound();
 					moved = true;
 				}
 			}
@@ -154,12 +148,5 @@ public class DRect : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-	}
-
-	private void PlaySound(){
-		if((Time.time) > nextSoundTime + lastSound){
-			GameMaster.gameMaster.PlaySound();
-			lastSound = Time.time;
-		}
 	}
 }
