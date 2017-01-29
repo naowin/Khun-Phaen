@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{83845BAD-F91E-B286-8219-6CCD2AE043A5}</ProjectGuid>
+    <ProjectGuid>{ACF95B11-03C1-7186-FE6E-75A86BB75F20}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -60,6 +60,7 @@
      <Compile Include="Assets\Scripts\Game\GameEye.cs" />
      <Compile Include="Assets\Scripts\Game\GameMaster.cs" />
      <Compile Include="Assets\Scripts\Game\GameMenuHandler.cs" />
+     <Compile Include="Assets\Scripts\Game\HighscoreHandler.cs" />
      <Compile Include="Assets\Scripts\Game\Pieces\BigSquare.cs" />
      <Compile Include="Assets\Scripts\Game\Pieces\DRect.cs" />
      <Compile Include="Assets\Scripts\Game\Pieces\Rect.cs" />

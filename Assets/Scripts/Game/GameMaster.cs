@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class GameMaster : MonoBehaviour {
 
 	public static GameMaster gameMaster;
-	public int totalMoves;
-	public Text moves; 
+	public int totalDraws;
+	public Text draws; 
 
 	public Canvas WinWindow;
 
@@ -31,17 +31,19 @@ public class GameMaster : MonoBehaviour {
 	public GameObject blackScreen;
 	private List<GameObject> gamePanels;
 
+	private int highscoreTreshold = 100;
+
 	// GameEye[] gameBoard = new GameEye[20];
 	private Dictionary<string, GameEye> gameBoard;
 
 	void Awake()
 	{
-		totalMoves = 0;
+		totalDraws = 0;
 		gameMaster = this;
 	}
 
 	void Start () {
-		moves = moves.GetComponent<Text>();
+		draws = draws.GetComponent<Text>();
 		BigSquare = BigSquare.GetComponent<BigSquare>();
 		DRect = DRect.GetComponent<DRect>();
 		Rect1 = Rect1.GetComponent<Rectangle>();
@@ -126,13 +128,21 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	public void AddMove() {
-		this.totalMoves++;	
-		moves.text = string.Format("Moves: {0}", totalMoves);
+		this.totalDraws++;	
+		draws.text = string.Format("Draws: {0}", totalDraws);
 	}
 
 	public void CheckWin() {
 		if(BigSquare.transform.position.x == 0 && BigSquare.transform.position.z <= -7 )
 		{
+			this.gameText.SetActive (false);
+			Text scoreText = WinWindow.transform.Find ("MainPanel/TextOfWin").GetComponent<Text>();
+			int draws = this.totalDraws + 1;
+			scoreText.text = string.Format ("Total draws used: {0}", draws);
+			if (draws < highscoreTreshold) {
+				WinWindow.transform.Find ("MainPanel/NewHighscorePanel").gameObject.SetActive(true);
+			}
+
 			WinWindow.gameObject.SetActive(true);
 		}
 	}
@@ -144,20 +154,59 @@ public class GameMaster : MonoBehaviour {
 
 		switch (menuID) {
 			case 0:
+				gamePanels [menuID].SetActive (true);
+				break;
 			case 1:
+				gamePanels [menuID].SetActive (true);
+				this.UpdateHighscores ();
+				break;
 			case 2:
 				gamePanels [menuID].SetActive (true);
 				break;
+			case 3:
+				gamePanels [1].SetActive (true);
+				WinWindow.gameObject.SetActive (false);
+				break;
 			default:
+				// this.ResetGame();
 				blackScreen.SetActive (false);
 				gamePanels [3].SetActive (true);
 				break;
 		}
 	}
 
+	public void AddHighscore(string winner) {
+		var newScore = this.totalDraws;
+		var newWinner = winner;
+		var oldScore = 0;
+		var oldWinner = string.Empty;
+		for (var i = 0; i < 5; i++) {
+			if (PlayerPrefs.HasKey (i + "HighScore")) {
+				if (PlayerPrefs.GetInt (i + "HighScore") < newScore) {
+					// we got new highscore!
+					oldScore = PlayerPrefs.GetInt (i + "HighScore");
+					oldWinner = PlayerPrefs.GetString (i + "HighScoreName");
+					PlayerPrefs.SetInt (i + "HighScore", newScore);
+					PlayerPrefs.SetString (i + "HighScoreName", newWinner);
+					newScore = oldScore;
+					newWinner = oldWinner;		
+				}
+			} 
+			else 
+			{
+				PlayerPrefs.SetInt (i + "HighScore", newScore);
+				PlayerPrefs.SetString (i + "HighScoreName", newWinner);
+				newScore = 0;
+				newWinner = string.Empty;
+			}
+		}
+
+		this.SwitchMenu (3);
+	}
+
 	public void ResetGame() {
-		this.totalMoves = 0;
-		moves.text = string.Format("Moves: {0}", totalMoves);
+		this.totalDraws = 0;
+		draws.text = string.Format("Draws: {0}", totalDraws);
 
 		// Reset Pieces;		
 		BigSquare.transform.position = new Vector3 (0, 1, 6);
@@ -183,6 +232,19 @@ public class GameMaster : MonoBehaviour {
 		Square4.ResetPosition ();
 
 		setGameBoard ();
+	}
+
+	private void UpdateHighscores() {
+		// var hightscorePanelTexts = highscorePanel.GetComponentsInChildren<Text> ();
+		var ranks = GameObject.FindGameObjectsWithTag("Rank");
+		for (var i = 0; i < 5; i++) {
+			if (PlayerPrefs.HasKey (i + "HighScore")) {
+				var draws = PlayerPrefs.GetInt (i + "HighScore");
+				var name = PlayerPrefs.GetString (i + "HighScoreName");
+				var txtComponent = ranks [0].GetComponent<Text> ();
+				txtComponent.text = string.Format ("#{0} {1} Draws: {2}", i, name, draws);
+			}
+		}
 	}
 
 	// Update is called once per frame
