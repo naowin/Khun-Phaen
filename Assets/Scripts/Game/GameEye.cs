@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameEye : MonoBehaviour {
+public class GameEye {
 
 	public float x = 0;
 	public float z = 0;

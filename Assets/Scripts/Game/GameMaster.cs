@@ -31,6 +31,13 @@ public class GameMaster : MonoBehaviour {
 	public GameObject blackScreen;
 	private List<GameObject> gamePanels;
 
+	// ranks
+	public Text Rank1;
+	public Text Rank2;
+	public Text Rank3;
+	public Text Rank4;
+	public Text Rank5;
+
 	private int highscoreTreshold = 100;
 
 	// GameEye[] gameBoard = new GameEye[20];
@@ -123,8 +130,6 @@ public class GameMaster : MonoBehaviour {
 		{
 			gameBoard[lock_key].empty = false;
 		}
-
-		Debug.Log ("unlocK: " + unlock_eye + "      lock: " + lock_eye);
 	}
 
 	public void AddMove() {
@@ -164,11 +169,13 @@ public class GameMaster : MonoBehaviour {
 				gamePanels [menuID].SetActive (true);
 				break;
 			case 3:
+				this.UpdateHighscores ();
 				gamePanels [1].SetActive (true);
 				WinWindow.gameObject.SetActive (false);
 				break;
 			default:
-				// this.ResetGame();
+				this.ResetGame();
+				// PlayerPrefs.DeleteAll();
 				blackScreen.SetActive (false);
 				gamePanels [3].SetActive (true);
 				break;
@@ -176,24 +183,34 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	public void AddHighscore(string winner) {
+		Debug.Log ("Adding highscore for: " + winner + " total draws used: " + this.totalDraws);
+
 		var newScore = this.totalDraws;
 		var newWinner = winner;
 		var oldScore = 0;
 		var oldWinner = string.Empty;
 		for (var i = 0; i < 5; i++) {
 			if (PlayerPrefs.HasKey (i + "HighScore")) {
-				if (PlayerPrefs.GetInt (i + "HighScore") < newScore) {
+				var checkScore = PlayerPrefs.GetInt (i + "HighScore");
+				if (checkScore > newScore || checkScore == 0) {
 					// we got new highscore!
 					oldScore = PlayerPrefs.GetInt (i + "HighScore");
 					oldWinner = PlayerPrefs.GetString (i + "HighScoreName");
 					PlayerPrefs.SetInt (i + "HighScore", newScore);
 					PlayerPrefs.SetString (i + "HighScoreName", newWinner);
+					// Debug.Log ("Rank" + i + " draws:" + newScore + " winner: " + newWinner);
 					newScore = oldScore;
 					newWinner = oldWinner;		
-				}
+				} 
+				// else 
+				// {
+					// Debug.Log ("New score was not better then previous old: " + checkScore + " new score:" + newScore);
+				// }
 			} 
 			else 
 			{
+				// Debug.Log ("highscore did not exist!" + PlayerPrefs.HasKey (i + "HighScore"));
+				// Debug.Log ("Added new highscore to playerPref: " + i + "HighScore" + " the score: " + newScore + " by winner: " + newWinner);
 				PlayerPrefs.SetInt (i + "HighScore", newScore);
 				PlayerPrefs.SetString (i + "HighScoreName", newWinner);
 				newScore = 0;
@@ -235,14 +252,32 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	private void UpdateHighscores() {
-		// var hightscorePanelTexts = highscorePanel.GetComponentsInChildren<Text> ();
-		var ranks = GameObject.FindGameObjectsWithTag("Rank");
-		for (var i = 0; i < 5; i++) {
+		for (var i = 0; i <= 5; i++) {
 			if (PlayerPrefs.HasKey (i + "HighScore")) {
 				var draws = PlayerPrefs.GetInt (i + "HighScore");
-				var name = PlayerPrefs.GetString (i + "HighScoreName");
-				var txtComponent = ranks [0].GetComponent<Text> ();
-				txtComponent.text = string.Format ("#{0} {1} Draws: {2}", i, name, draws);
+				var winner = PlayerPrefs.GetString (i + "HighScoreName");
+				if (draws == 0) 
+				{
+					continue;
+				}
+
+				switch (i) {
+				case 0:
+					Rank1.text = string.Format ("#1 Draws {0} by {1}", draws, winner);
+					break;
+				case 1:
+					Rank2.text = string.Format ("#2 Draws {0} by {1}", draws, winner);
+					break;
+				case 2:
+					Rank3.text = string.Format ("#3 Draws {0} by {1}", draws, winner);
+					break;
+				case 3:
+					Rank4.text = string.Format ("#4 Draws {0} by {1}", draws, winner);
+					break;
+				case 4:
+					Rank5.text = string.Format ("#5 Draws {0} by {1}", draws, winner);
+					break;
+				}
 			}
 		}
 	}
