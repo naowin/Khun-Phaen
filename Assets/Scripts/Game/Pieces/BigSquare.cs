@@ -68,7 +68,7 @@ public class BigSquare : MonoBehaviour {
 			}	
 		}
 		else if (f <= -0.5) {
-			// Debug.Log("Down");
+			//Debug.Log("Down");
 			
 			Vector3 checkLeftPos = currentPosition;
 			Vector3 checkRightPos = currentPosition;
@@ -77,8 +77,8 @@ public class BigSquare : MonoBehaviour {
 			
 			checkRightPos.x += 2;
 			checkRightPos.z -= 6;
-			
-			if (GameMaster.gameMaster.isEmpty(checkLeftPos) && GameMaster.gameMaster.isEmpty(checkRightPos) || CheckBot(checkLeftPos.z, checkRightPos.z)){
+
+            if (GameMaster.gameMaster.isEmpty(checkLeftPos) && GameMaster.gameMaster.isEmpty(checkRightPos) || CheckBot(checkLeftPos.z, checkRightPos.z)){
 				Vector3 destination = currentPosition;
 				destination.z -= 4;
 				transform.position = Vector3.Lerp(currentPosition, destination, 10);

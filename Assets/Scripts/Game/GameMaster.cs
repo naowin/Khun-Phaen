@@ -7,11 +7,11 @@ public class GameMaster : MonoBehaviour {
 
 	public static GameMaster gameMaster;
 	public int totalDraws;
-	public Text draws; 
+	public Text draws;
 
-	public Canvas WinWindow;
+    public GameMenu gameMenu;
 
-	// Pieces
+	// Gaem Pieces
 	public BigSquare BigSquare;
 	public DRect DRect;
 	public Rectangle Rect1;
@@ -23,21 +23,8 @@ public class GameMaster : MonoBehaviour {
 	public Square Square3;
 	public Square Square4;
 
-	// menus
-	public GameObject mainMenuPanel;
-	public GameObject highscorePanel;
-	public GameObject aboutPanel;
-	public GameObject gameText;
-	public GameObject blackScreen;
-	private List<GameObject> gamePanels;
-
-	// ranks
-	public Text Rank1;
-	public Text Rank2;
-	public Text Rank3;
-	public Text Rank4;
-	public Text Rank5;
-
+    // HighScore Stuff
+    public HighscoreManager highscoreManager;
 	private int highscoreTreshold = 100;
 
 	// GameEye[] gameBoard = new GameEye[20];
@@ -63,12 +50,6 @@ public class GameMaster : MonoBehaviour {
 		Square4 = Square4.GetComponent<Square>();
 
 		setGameBoard ();
-
-		gamePanels = new List<GameObject> ();
-		gamePanels.Add(mainMenuPanel);
-		gamePanels.Add(highscorePanel);
-		gamePanels.Add(aboutPanel);
-		gamePanels.Add(gameText);
 	}
 
 	public void setGameBoard(){
@@ -106,16 +87,37 @@ public class GameMaster : MonoBehaviour {
 		gameBoard.Add("2-16", new GameEye (2, -16, false));
 	}
 
-	public bool isEmpty(Vector3 pos) {
-		var key = string.Format("{0}{1}", pos.x, pos.z);
-		if( gameBoard.ContainsKey(key))
-		{
-			return gameBoard[key].empty;
-		}
+    public void ResetGame()
+    {
+        this.totalDraws = 0;
+        draws.text = string.Format("Draws: {0}", totalDraws);
 
-		return false;
-	}
+        // Reset Pieces;		
+        BigSquare.transform.position = new Vector3(0, 1, 6);
+        DRect.transform.position = new Vector3(0, 1.5f, 0);
+        Rect1.transform.position = new Vector3(-6, 1.5f, -6);
+        Rect2.transform.position = new Vector3(6, 1.5f, -6);
+        Rect3.transform.position = new Vector3(-6, 1.5f, 6);
+        Rect4.transform.position = new Vector3(6, 1.5f, 6);
+        Square1.transform.position = new Vector3(-2, 1.5f, -8);
+        Square2.transform.position = new Vector3(2, 1.5f, -8);
+        Square3.transform.position = new Vector3(-2, 1.5f, -4);
+        Square4.transform.position = new Vector3(2, 1.5f, -4);
 
+        BigSquare.ResetPosition();
+        DRect.ResetPosition();
+        Rect1.ResetPosition();
+        Rect2.ResetPosition();
+        Rect3.ResetPosition();
+        Rect4.ResetPosition();
+        Square1.ResetPosition();
+        Square2.ResetPosition();
+        Square3.ResetPosition();
+        Square4.ResetPosition();
+
+        setGameBoard();
+    }
+        
 	public void unlockEyes(Vector3 unlock_eye, Vector3 lock_eye) 
 	{
 
@@ -132,158 +134,28 @@ public class GameMaster : MonoBehaviour {
 		}
 	}
 
-	public void AddMove() {
+    public bool isEmpty(Vector3 pos)
+    {
+        var key = string.Format("{0}{1}", pos.x, pos.z);
+        if (gameBoard.ContainsKey(key))
+        {
+            return gameBoard[key].empty;
+        }
+
+        return false;
+    }
+
+    public void AddMove() {
 		this.totalDraws++;	
-		draws.text = string.Format("Draws: {0}", totalDraws);
+		draws.text = string.Format("Draws Used: {0}", totalDraws);
 	}
 
 	public void CheckWin() {
-		if(BigSquare.transform.position.x == 0 && BigSquare.transform.position.z <= -7 )
+		if(BigSquare.transform.position.x == 0 && BigSquare.transform.position.z <= -8 )
 		{
-			this.gameText.SetActive (false);
-			Text scoreText = WinWindow.transform.Find ("MainPanel/TextOfWin").GetComponent<Text>();
-			int draws = this.totalDraws + 1;
-			scoreText.text = string.Format ("Total draws used: {0}", draws);
-			if (draws < highscoreTreshold) {
-				WinWindow.transform.Find ("MainPanel/NewHighscorePanel").gameObject.SetActive(true);
-			}
-
-			WinWindow.gameObject.SetActive(true);
+            int draws = this.totalDraws;
+            bool newHighscore = draws < highscoreTreshold;
+            highscoreManager.GameWon(draws, newHighscore);
 		}
-	}
-
-	public void SwitchMenu(int menuID) {
-		foreach (var panel in gamePanels) {
-			panel.SetActive (false);
-		}
-
-		switch (menuID) {
-			case 0:
-				gamePanels [menuID].SetActive (true);
-				break;
-			case 1:
-				gamePanels [menuID].SetActive (true);
-				this.UpdateHighscores ();
-				break;
-			case 2:
-				gamePanels [menuID].SetActive (true);
-				break;
-			case 3:
-				this.UpdateHighscores ();
-				gamePanels [1].SetActive (true);
-				WinWindow.gameObject.SetActive (false);
-				break;
-			default:
-				this.ResetGame();
-				// PlayerPrefs.DeleteAll();
-				blackScreen.SetActive (false);
-				gamePanels [3].SetActive (true);
-				break;
-		}
-	}
-
-	public void AddHighscore(string winner) {
-		Debug.Log ("Adding highscore for: " + winner + " total draws used: " + this.totalDraws);
-
-		var newScore = this.totalDraws;
-		var newWinner = winner;
-		var oldScore = 0;
-		var oldWinner = string.Empty;
-		for (var i = 0; i < 5; i++) {
-			if (PlayerPrefs.HasKey (i + "HighScore")) {
-				var checkScore = PlayerPrefs.GetInt (i + "HighScore");
-				if (checkScore > newScore || checkScore == 0) {
-					// we got new highscore!
-					oldScore = PlayerPrefs.GetInt (i + "HighScore");
-					oldWinner = PlayerPrefs.GetString (i + "HighScoreName");
-					PlayerPrefs.SetInt (i + "HighScore", newScore);
-					PlayerPrefs.SetString (i + "HighScoreName", newWinner);
-					// Debug.Log ("Rank" + i + " draws:" + newScore + " winner: " + newWinner);
-					newScore = oldScore;
-					newWinner = oldWinner;		
-				} 
-				// else 
-				// {
-					// Debug.Log ("New score was not better then previous old: " + checkScore + " new score:" + newScore);
-				// }
-			} 
-			else 
-			{
-				// Debug.Log ("highscore did not exist!" + PlayerPrefs.HasKey (i + "HighScore"));
-				// Debug.Log ("Added new highscore to playerPref: " + i + "HighScore" + " the score: " + newScore + " by winner: " + newWinner);
-				PlayerPrefs.SetInt (i + "HighScore", newScore);
-				PlayerPrefs.SetString (i + "HighScoreName", newWinner);
-				newScore = 0;
-				newWinner = string.Empty;
-			}
-		}
-
-		this.SwitchMenu (3);
-	}
-
-	public void ResetGame() {
-		this.totalDraws = 0;
-		draws.text = string.Format("Draws: {0}", totalDraws);
-
-		// Reset Pieces;		
-		BigSquare.transform.position = new Vector3 (0, 1, 6);
-		DRect.transform.position = new Vector3 (0, 1.5f, 0);
-		Rect1.transform.position = new Vector3 (-6, 1.5f, -6);
-		Rect2.transform.position = new Vector3 (6, 1.5f, -6);
-		Rect3.transform.position = new Vector3 (-6, 1.5f, 6);
-		Rect4.transform.position = new Vector3 (6, 1.5f, 6);
-		Square1.transform.position = new Vector3 (-2, 1.5f, -8);
-		Square2.transform.position = new Vector3 (2, 1.5f, -8);
-		Square3.transform.position = new Vector3 (-2, 1.5f, -4);
-		Square4.transform.position = new Vector3 (2, 1.5f, -4);
-
-		BigSquare.ResetPosition ();
-		DRect.ResetPosition ();
-		Rect1.ResetPosition ();
-		Rect2.ResetPosition ();
-		Rect3.ResetPosition ();
-		Rect4.ResetPosition ();
-		Square1.ResetPosition ();
-		Square2.ResetPosition ();
-		Square3.ResetPosition ();
-		Square4.ResetPosition ();
-
-		setGameBoard ();
-	}
-
-	private void UpdateHighscores() {
-		for (var i = 0; i <= 5; i++) {
-			if (PlayerPrefs.HasKey (i + "HighScore")) {
-				var draws = PlayerPrefs.GetInt (i + "HighScore");
-				var winner = PlayerPrefs.GetString (i + "HighScoreName");
-				if (draws == 0) 
-				{
-					continue;
-				}
-
-				switch (i) {
-				case 0:
-					Rank1.text = string.Format ("#1 Draws {0} by {1}", draws, winner);
-					break;
-				case 1:
-					Rank2.text = string.Format ("#2 Draws {0} by {1}", draws, winner);
-					break;
-				case 2:
-					Rank3.text = string.Format ("#3 Draws {0} by {1}", draws, winner);
-					break;
-				case 3:
-					Rank4.text = string.Format ("#4 Draws {0} by {1}", draws, winner);
-					break;
-				case 4:
-					Rank5.text = string.Format ("#5 Draws {0} by {1}", draws, winner);
-					break;
-				}
-			}
-		}
-	}
-
-	// Update is called once per frame
-	void Update () {
-	
 	}
 }

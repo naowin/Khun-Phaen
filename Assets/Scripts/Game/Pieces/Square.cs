@@ -4,7 +4,7 @@ using System.Collections;
 public class Square : MonoBehaviour {
 
 	Vector3 StartPosition;
-	int threshold = 9;
+	int threshold = 100;
 	bool moved = false;
 	
 	Vector3 currentPosition; 

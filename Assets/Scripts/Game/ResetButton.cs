@@ -20,7 +20,8 @@ public class ResetButton : MonoBehaviour {
 
 	public void ResetGame()
 	{
-		GameMaster.gameMaster.ResetGame();
+        GameMaster.gameMaster.ResetGame();
+        
 	}
 
 	// Update is called once per frame

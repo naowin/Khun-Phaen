@@ -4,7 +4,7 @@ using System.Collections;
 public class DRect : MonoBehaviour {
 
 	Vector3 StartPosition;
-	int threshold = 9;
+	int threshold = 100;
 	bool moved = false;
 
 	Vector3 currentPosition; 
@@ -99,7 +99,6 @@ public class DRect : MonoBehaviour {
 				Vector3 destination = currentPosition;
 				destination.x += 6;
 				if (GameMaster.gameMaster.isEmpty(destination)){
-					Debug.Log ("Yes we can move to: " + destination);	
 					destination.x -= 2;
 					transform.position = Vector3.Lerp(currentPosition, destination, 10);
 
@@ -118,7 +117,6 @@ public class DRect : MonoBehaviour {
 				Vector3 destination = currentPosition;
 				destination.x -= 6;
 				if (GameMaster.gameMaster.isEmpty(destination)){
-					Debug.Log ("Yes we can move to: " + destination);	
 					destination.x += 2;
 					transform.position = Vector3.Lerp(currentPosition, destination, 10);
 
